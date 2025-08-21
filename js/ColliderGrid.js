@@ -29,6 +29,7 @@ export class ColliderGrid {
   }
 
   _insert(brick) {
+    brick._cells = [];
     const { x, y, w, h } = brick.rect;
     const c0 = Math.floor(x / this.cellW);
     const r0 = Math.floor(y / this.cellH);
@@ -37,16 +38,21 @@ export class ColliderGrid {
 
     for (let r = Math.max(0, r0); r <= Math.min(this.rows - 1, r1); r++) {
       for (let c = Math.max(0, c0); c <= Math.min(this.cols - 1, c1); c++) {
-        this.cells[r * this.cols + c].push(brick);
+        const idx = r * this.cols + c;
+        this.cells[idx].push(brick);
+        brick._cells.push(idx);
       }
     }
   }
 
   remove(brick) {
-    for (const cell of this.cells) {
-      const idx = cell.indexOf(brick);
-      if (idx !== -1) cell.splice(idx, 1);
+    if (!brick._cells) return;
+    for (const idx of brick._cells) {
+      const cell = this.cells[idx];
+      const pos = cell.indexOf(brick);
+      if (pos !== -1) cell.splice(pos, 1);
     }
+    brick._cells = [];
   }
 
   queryCircle(cx, cy, cr) {
