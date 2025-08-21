@@ -33,6 +33,7 @@ export class Game {
     this.level = 1;
 
     this.bricks = [];
+    this.movingBricks = [];
     this.grid = new ColliderGrid();
     this._gridRebuildCooldown = 0;
 
@@ -126,11 +127,12 @@ export class Game {
     this.ball.update(stepMs, this.paddle);
 
     // Moving bricks + periodic grid rebuild when motion exists
-    let moving = false;
-    for (const b of this.bricks) {
-      if ((b.vx || b.vy) && b.alive) { moving = true; b.tick(stepMs, this); }
+    for (let i = this.movingBricks.length - 1; i >= 0; i--) {
+      const b = this.movingBricks[i];
+      if (!b.alive || (!b.vx && !b.vy)) { this.movingBricks.splice(i, 1); continue; }
+      b.tick(stepMs, this);
     }
-    if (moving) {
+    if (this.movingBricks.length) {
       this._gridRebuildCooldown -= stepMs;
       if (this._gridRebuildCooldown <= 0) {
         this.grid.build(this.bricks, this.width, this.height);
@@ -205,6 +207,7 @@ export class Game {
     // Bricks
     this.layerBricks.innerHTML = '';
     this.bricks = this.script.createBricks(this);
+    this.movingBricks = this.bricks.filter(b => b.vx || b.vy);
     this.grid.build(this.bricks, this.width, this.height);
     this._gridRebuildCooldown = 0;
 
@@ -241,6 +244,7 @@ export class Game {
     this.ui.updateLives(this.lives);
     this.layerBricks.innerHTML = '';
     this.bricks = this.script.createBricks(this);
+    this.movingBricks = this.bricks.filter(b => b.vx || b.vy);
     this.grid.build(this.bricks, this.width, this.height);
     this.ball.resetToPaddle(this.paddle);
     this.input.paused = false;
