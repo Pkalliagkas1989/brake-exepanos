@@ -1,4 +1,6 @@
 // Uniform grid broadphase for brick lookup near the ball (reduces checks).
+let _nextQueryId = 1; // Global counter for dedupe markers
+
 export class ColliderGrid {
   constructor() {
     this.cols = 0;
@@ -8,6 +10,9 @@ export class ColliderGrid {
     this.width = 0;
     this.height = 0;
     this.cells = []; // Array<Brick[]>
+
+    // Reusable array for query results
+    this._out = [];
   }
 
   build(bricks, boardW, boardH) {
@@ -49,6 +54,9 @@ export class ColliderGrid {
     }
   }
 
+  // Bump counter once per frame to invalidate old markers
+  beginFrame() { _nextQueryId++; }
+
   queryCircle(cx, cy, cr) {
     if (!this.cells.length) return [];
     const x0 = cx - cr, y0 = cy - cr, x1 = cx + cr, y1 = cy + cr;
@@ -57,14 +65,18 @@ export class ColliderGrid {
     const c1 = Math.min(this.cols - 1, Math.floor(x1 / this.cellW));
     const r1 = Math.min(this.rows - 1, Math.floor(y1 / this.cellH));
 
-    const out = [];
-    const seen = new Set();
+    const out = this._out;
+    out.length = 0; // trim reusable array
+    const qid = _nextQueryId++;
     for (let r = r0; r <= r1; r++) {
       for (let c = c0; c <= c1; c++) {
         const cell = this.cells[r * this.cols + c];
         for (const b of cell) {
           if (!b.alive) continue;
-          if (!seen.has(b)) { seen.add(b); out.push(b); }
+          if (b._queryId !== qid) {
+            b._queryId = qid;
+            out.push(b);
+          }
         }
       }
     }
