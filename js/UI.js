@@ -96,7 +96,7 @@ export class UI {
   updateFPS(ts, ignoreDrops = false){
     const dt = ts - this._lastTs;
     this._lastTs = ts;
-    if (dt <= 0) return;
+    if (ignoreDrops || dt <= 0) return;
 
     const inst = 1000 / dt;
     this._fpsEMA = this._fpsEMA ? (this._alpha*inst + (1-this._alpha)*this._fpsEMA) : inst;
