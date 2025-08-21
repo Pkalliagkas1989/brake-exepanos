@@ -39,6 +39,7 @@ export function EncryptionChamber() {
         game.layerBricks.appendChild(node);
         const b = new Brick(node, slot.x, slot.y, slot.w, slot.h, { type:'regrow' });
         game.bricks.push(b);
+        if (b.vx || b.vy) game.movingBricks.push(b);
         game.grid.build(game.bricks, game.width, game.height);
       }
     },

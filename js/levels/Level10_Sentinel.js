@@ -39,6 +39,7 @@ export function TheSentinel() {
         const x = Math.max(0, Math.min(game.width - w, game._boss.x + i*(w+gap) - w/2));
         const b = new Brick(node, x, y, w, h, { hp:1 });
         game.bricks.push(b);
+        if (b.vx || b.vy) game.movingBricks.push(b);
       }
       game.grid.build(game.bricks, game.width, game.height);
     },
