@@ -12,13 +12,14 @@ export function buildPattern(container, game, rows, cols, shouldPlace, styleAt, 
 
   const bricks = [];
   const frag = document.createDocumentFragment();
+  const tpl = document.getElementById('tpl-brick');
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       if (!shouldPlace(r, c, rows, cols)) continue;
       const x = c * (bw + gap);
       const y = topPadding + r * (bh + gap);
-      const node = game._acquireBrickNode();
+      const node = tpl.content.firstElementChild.cloneNode(true);
       node.style.width = bw + 'px';
       node.style.height = bh + 'px';
       const bg = styleAt?.(r, c);
@@ -26,7 +27,6 @@ export function buildPattern(container, game, rows, cols, shouldPlace, styleAt, 
       frag.appendChild(node);
 
       const opts = optsAt?.(r, c) ?? {};
-      opts.onRemove = game._releaseBrickNode.bind(game);
       const b = new Brick(node, x, y, bw, bh, opts);
       bricks.push(b);
     }

@@ -8,7 +8,6 @@ export class Brick {
     this.vx   = opts.vx ?? 0;   // for moving bricks
     this.vy   = opts.vy ?? 0;
     this.alive = true;
-    this._onRemove = opts.onRemove;
 
     // Visual overrides (optional)
     if (opts.background) this.node.style.background = opts.background;
@@ -46,7 +45,6 @@ export class Brick {
   destroy() {
     if (!this.alive) return;
     this.alive = false;
-    if (this._onRemove) this._onRemove(this.node);
-    else this.node.remove();
+    this.node.remove();
   }
 }

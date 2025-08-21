@@ -46,10 +46,6 @@ export class Game {
     this._projectiles = [];
     this._boss = null;
 
-    // Brick pooling
-    this._brickPool = [];
-    this._tplBrick = document.getElementById('tpl-brick');
-
     // UI buttons
     this.ui.onRetry(() => this.resetAll());
     this.ui.onExit(()  => this.exitToTitle());
@@ -206,20 +202,21 @@ export class Game {
     this.ball.setSpeedMultiplier(this.script.speedMul ?? 1);
     this.paddle.setSpeedMultiplier(this.script.speedMul ?? 1);
 
-    this._clearBricks();
-    const start = performance.now();
-    this._runInFrames([
-      () => { this.bricks = this.script.createBricks(this); },
-      () => {
-        this.grid.build(this.bricks, this.width, this.height);
-        this._gridRebuildCooldown = 0;
-        if (this.bricks.length > 240) this.board.classList.add('lowfx');
-        else this.board.classList.remove('lowfx');
-        this.ball.resetToPaddle(this.paddle);
-        this.script.onEnter?.(this);
-        console.debug(`level ${n} build ${(performance.now()-start).toFixed(2)}ms`);
-      },
-    ]);
+    // Bricks
+    this.layerBricks.innerHTML = '';
+    this.bricks = this.script.createBricks(this);
+    this.grid.build(this.bricks, this.width, this.height);
+    this._gridRebuildCooldown = 0;
+
+    // Auto low-fx for massive brick counts
+    if (this.bricks.length > 240) this.board.classList.add('lowfx');
+    else this.board.classList.remove('lowfx');
+
+    // Ball reset
+    this.ball.resetToPaddle(this.paddle);
+
+    // Level hook
+    this.script.onEnter?.(this);
   }
 
   resetAll() {
@@ -233,7 +230,6 @@ export class Game {
     this.ui.updateLives(this.lives);
     this.ui.resetTimer();
     this.gameRoot.classList.remove('paused');
-    this._clearBricks();
     this.loadLevel(this.level);
     this.board.focus();
   }
@@ -243,67 +239,20 @@ export class Game {
     this.lives = 3;
     this.ui.updateScore(this.score);
     this.ui.updateLives(this.lives);
-    this._clearBricks();
-    this._runInFrames([
-      () => { this.bricks = this.script.createBricks(this); },
-      () => {
-        this.grid.build(this.bricks, this.width, this.height);
-        this.ball.resetToPaddle(this.paddle);
-        this.input.paused = false;
-        this._lifeLock = false;
-        this.ui.resetTimer();
-        this.ui.hidePause();
-        this.gameRoot.classList.remove('paused');
-      },
-    ]);
+    this.layerBricks.innerHTML = '';
+    this.bricks = this.script.createBricks(this);
+    this.grid.build(this.bricks, this.width, this.height);
+    this.ball.resetToPaddle(this.paddle);
+    this.input.paused = false;
+    this._lifeLock = false;
+    this.ui.resetTimer();
+    this.ui.hidePause();
+    this.gameRoot.classList.remove('paused');
   }
 
   exitToTitle() { window.location.reload(); }
   _continueFromPause() { this.input.paused = false; this.gameRoot.classList.remove('paused'); }
   addScore(v = 10) { this.score += v; }
-
-  // --- Brick pooling helpers ---
-  _acquireBrickNode() {
-    const n = this._brickPool.pop();
-    if (n) {
-      n.removeAttribute('style');
-      return n;
-    }
-    return this._tplBrick.content.firstElementChild.cloneNode(true);
-  }
-
-  _releaseBrickNode(node) {
-    node.remove();
-    node.removeAttribute('style');
-    this._brickPool.push(node);
-  }
-
-  _clearBricks() {
-    for (const b of this.bricks) {
-      if (b.alive) b.destroy();
-    }
-    this.bricks = [];
-  }
-
-  _scheduleIdle(cb) {
-    if ('requestIdleCallback' in window) requestIdleCallback(cb);
-    else requestAnimationFrame(cb);
-  }
-
-  _runInFrames(tasks) {
-    const start = performance.now();
-    const step = () => {
-      const fn = tasks.shift();
-      if (!fn) return;
-      const t0 = performance.now();
-      fn();
-      const t1 = performance.now();
-      console.debug(`stage took ${(t1 - t0).toFixed(2)}ms`);
-      if (tasks.length) this._scheduleIdle(step);
-      else console.debug(`build total ${(t1 - start).toFixed(2)}ms`);
-    };
-    this._scheduleIdle(step);
-  }
 
   // Life loss + small glitch feedback
   loseLife() {
