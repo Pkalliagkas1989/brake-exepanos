@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BREAKOUT.EXE</title>
+  <link rel="preload" href="./style.css" as="style" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <!-- HUD top bar -->
+  <header class="hud">
+    <div id="score" aria-live="polite">Score: 0</div>
+    <div id="lives" aria-live="polite">Lives: 3</div>
+    <div id="timer" aria-live="polite">Time: 0s</div>
+    <div id="fps" aria-live="off">FPS: --</div>
+    <div id="drops" aria-live="off">Drops: 0</div>
+
+    <div id="level-select" class="hud-panel">
+      <label for="levelBtn">Level:</label>
+      <select id="levelBtn" aria-label="Jump to level">
+        <option value="1">1 — Boot Sector</option>
+        <option value="2">2 — System Cache</option>
+        <option value="3">3 — Firewall</option>
+        <option value="4">4 — Memory Lane</option>
+        <option value="5">5 — Glitch Zone</option>
+        <option value="6">6 — Virus Vault</option>
+        <option value="7">7 — Recompiler</option>
+        <option value="8">8 — Encryption Chamber</option>
+        <option value="9">9 — Fragment Core</option>
+        <option value="10">10 — The Sentinel</option>
+      </select>
+      <button id="goLevel" class="btn">Go</button>
+    </div>
+  </header>
+
+  <!-- Game root -->
+  <main id="game-root">
+    <div id="game" class="game" role="application" aria-label="BREAKOUT.EXE playfield">
+      <div id="board" class="board" tabindex="0" aria-label="Game board">
+        <!-- Render layers (minimized count for perf) -->
+        <div id="bricks" class="layer bricks"></div>
+        <div id="entities" class="layer entities">
+          <div id="paddle" class="paddle" aria-hidden="true"></div>
+          <div id="ball" class="ball" aria-hidden="true"></div>
+        </div>
+        <div id="fx" class="layer fx" aria-hidden="true">
+          <div id="glitchOverlay" class="glitch-overlay" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <!-- Pause overlay -->
+      <div id="overlay-pause" class="overlay" aria-hidden="true" aria-modal="true" role="dialog">
+        <div class="panel" role="document">
+          <h2>Paused</h2>
+          <p>Press Esc / Space / Enter to resume</p>
+
+          <section class="settings">
+            <h3>Settings</h3>
+            <div class="field">
+              <label for="sfxVolume">SFX Volume</label>
+              <input id="sfxVolume" type="range" min="0" max="1" step="0.01" />
+            </div>
+
+            <div class="field">
+              <label for="effectsMode">Effects</label>
+              <select id="effectsMode">
+                <option value="auto">Auto (recommended)</option>
+                <option value="on">On</option>
+                <option value="off">Off</option>
+              </select>
+            </div>
+
+            <div class="field checkbox">
+              <label>
+                <input id="reducedMotion" type="checkbox" />
+                Reduced motion
+              </label>
+            </div>
+
+            <details class="help">
+              <summary>Input help</summary>
+              <ul>
+                <li>Move: Arrow keys / A–D</li>
+                <li>Pause/Resume: Space / Enter / Esc</li>
+                <li>Jump levels: 1–10</li>
+              </ul>
+            </details>
+          </section>
+
+          <div class="row">
+            <button id="btn-continue" class="btn">Continue</button>
+            <button id="btn-restart" class="btn">Restart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Over overlay -->
+      <div id="overlay-gameover" class="overlay" aria-hidden="true">
+        <div class="panel">
+          <h2>Game Over</h2>
+          <p>You ran out of lives.</p>
+          <div class="row">
+            <button id="btn-retry" class="btn">Retry</button>
+            <button id="btn-exit" class="btn">Exit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Brick template (fast cloning) -->
+  <template id="tpl-brick"><div class="brick"></div></template>
+
+  <!-- Entry point -->
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
