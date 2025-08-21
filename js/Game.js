@@ -94,6 +94,9 @@ export class Game {
 
   // ----- Simulation tick (fixed step) -----
   simulate(stepMs) {
+    // Advance grid query marker each frame to invalidate previous hits
+    this.grid.beginFrame();
+
     // Overlay state + paused class (lets CSS throttle transitions)
     if (this.input.paused && !this._pauseShown) {
       this._pauseShown = true;
