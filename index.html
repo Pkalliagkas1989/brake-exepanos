@@ -16,22 +16,6 @@
     <div id="fps" aria-live="off">FPS: --</div>
     <div id="drops" aria-live="off">Drops: 0</div>
 
-    <div id="level-select" class="hud-panel">
-      <label for="levelBtn">Level:</label>
-      <select id="levelBtn" aria-label="Jump to level">
-        <option value="1">1 — Boot Sector</option>
-        <option value="2">2 — System Cache</option>
-        <option value="3">3 — Firewall</option>
-        <option value="4">4 — Memory Lane</option>
-        <option value="5">5 — Glitch Zone</option>
-        <option value="6">6 — Virus Vault</option>
-        <option value="7">7 — Recompiler</option>
-        <option value="8">8 — Encryption Chamber</option>
-        <option value="9">9 — Fragment Core</option>
-        <option value="10">10 — The Sentinel</option>
-      </select>
-      <button id="goLevel" class="btn">Go</button>
-    </div>
   </header>
 
   <!-- Game root -->
@@ -54,6 +38,23 @@
         <div class="panel" role="document">
           <h2>Paused</h2>
           <p>Press Esc / Space / Enter to resume</p>
+
+          <div id="pause-level-select" class="hud-panel">
+            <label for="pauseLevelBtn">Level:</label>
+            <select id="pauseLevelBtn" aria-label="Jump to level">
+              <option value="1">1 — Boot Sector</option>
+              <option value="2">2 — System Cache</option>
+              <option value="3">3 — Firewall</option>
+              <option value="4">4 — Memory Lane</option>
+              <option value="5">5 — Glitch Zone</option>
+              <option value="6">6 — Virus Vault</option>
+              <option value="7">7 — Recompiler</option>
+              <option value="8">8 — Encryption Chamber</option>
+              <option value="9">9 — Fragment Core</option>
+              <option value="10">10 — The Sentinel</option>
+            </select>
+            <button id="pauseGoLevel" class="btn">Go</button>
+          </div>
 
           <section class="settings">
             <h3>Settings</h3>

@@ -52,9 +52,9 @@ export class Game {
     this.ui.onPauseContinue(() => this._continueFromPause());
     this.ui.onPauseRestart(()  => this.restartLevel());
 
-    // Level select control
-    document.getElementById('goLevel')?.addEventListener('click', () => {
-      const lvl = parseInt(document.getElementById('levelBtn').value, 10);
+    // Level select control (pause menu)
+    document.getElementById('pauseGoLevel')?.addEventListener('click', () => {
+      const lvl = parseInt(document.getElementById('pauseLevelBtn').value, 10);
       this.jumpToLevel(lvl);
     });
 
